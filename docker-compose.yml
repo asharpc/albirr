@@ -17,7 +17,6 @@ services:
       retries: 10
 
   backend:
-    image: ${BACKEND_IMAGE:-ghcr.io/asharpc/albirr-backend:latest}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -47,7 +46,6 @@ services:
         required: false
 
   frontend:
-    image: ${FRONTEND_IMAGE:-ghcr.io/asharpc/albirr-frontend:latest}
     build:
       context: ./www
       dockerfile: Dockerfile

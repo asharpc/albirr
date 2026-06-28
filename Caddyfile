@@ -8,10 +8,6 @@
 # Caddy stores certs/state under /data (mounted as the caddy_data volume),
 # so cert renewal survives container restarts.
 
-{
-	email {$ACME_EMAIL}
-}
-
 {$CADDY_HOSTNAME::80} {
 	encode gzip zstd
 

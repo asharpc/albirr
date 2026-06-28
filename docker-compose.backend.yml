@@ -39,13 +39,32 @@ services:
       - media:/app/media
       - static:/app/staticfiles
     ports:
-      - "${BACKEND_PORT:-9001}:9001"
+      - "127.0.0.1:${BACKEND_PORT:-9001}:9001"
     depends_on:
       db:
         condition: service_healthy
         required: false
 
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      CADDY_HOSTNAME: ${CADDY_HOSTNAME:-:80}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    depends_on:
+      - backend
+
 volumes:
   pgdata:
   media:
   static:
+  caddy_data:
+  caddy_config:

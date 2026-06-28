@@ -1,0 +1,28 @@
+# Caddy config for the backend-only stack.
+#
+# Behavior depends on CADDY_HOSTNAME:
+#   unset / ":80"           -> serve HTTP on port 80 for any hostname (no TLS)
+#   "api.albirr.com"        -> auto-provision Let's Encrypt cert, redirect :80 -> :443
+#   "api.albirr.com:8443"   -> serve only on that explicit port
+#
+# Caddy stores certs/state under /data (mounted as the caddy_data volume),
+# so cert renewal survives container restarts.
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$CADDY_HOSTNAME::80} {
+	encode gzip zstd
+
+	# Larger uploads (receipts, media)
+	request_body {
+		max_size 25MB
+	}
+
+	# Proxy everything to gunicorn
+	reverse_proxy backend:9001 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Real-IP {remote_host}
+	}
+}

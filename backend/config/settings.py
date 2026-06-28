@@ -74,6 +74,14 @@ CORS_ALLOWED_ORIGINS = [
     o.strip() for o in os.environ.get('CORS_ALLOWED_ORIGINS', _default_cors).split(',') if o.strip()
 ]
 
+# Regex patterns for origins (use when you need wildcard subdomains, e.g.
+# every Cloudflare Pages preview deploy gets its own <hash>.pages.dev URL).
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r.strip() for r in os.environ.get('CORS_ALLOWED_ORIGIN_REGEXES', '').split(',') if r.strip()
+]
+
+# CSRF_TRUSTED_ORIGINS supports wildcards natively (Django ≥4):
+#   https://*.albirr.pages.dev
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
 ]

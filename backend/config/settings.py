@@ -69,15 +69,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+_default_cors = 'http://localhost:5173,http://localhost:8080'
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173', 
-    'http://localhost:8080', 
-    'https://api.v1.eazyskool.in',
-    'https://app.eazyskool.in',
+    o.strip() for o in os.environ.get('CORS_ALLOWED_ORIGINS', _default_cors).split(',') if o.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False').lower() in ('1', 'true', 'yes')
+
+# Behind Caddy/nginx — trust the X-Forwarded-Proto header so Django
+# correctly identifies HTTPS requests and builds absolute URLs.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
